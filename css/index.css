@@ -1,0 +1,14 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.circle {
+    /*canvas默认是行内块元素 将其转换为块元素 使左右外边距生效*/
+    display: block;
+    margin: 100px auto;
+    width: 1000px;
+    height: 800px;
+    border: 1px solid #000;
+}
