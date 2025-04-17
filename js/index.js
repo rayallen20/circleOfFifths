@@ -68,7 +68,7 @@ const arc = {
             defaultColor: '#f36f22',
             hoverColor: '#f79e6b',
             isHovering: false,
-            name: 'A Minor'
+            name: 'A'
         },
         E: {
             startAngle: Math.PI / 6,
@@ -76,7 +76,7 @@ const arc = {
             defaultColor: '#ec1b3c',
             hoverColor: '#f1526b',
             isHovering: false,
-            name: 'E Minor'
+            name: 'E'
         },
         B: {
             startAngle: Math.PI / 6 * 2,
@@ -140,7 +140,7 @@ const arc = {
             defaultColor: '#fbd307',
             hoverColor: '#fdec95',
             isHovering: false,
-            name: 'C Major'
+            name: 'C'
         },
         G: {
             startAngle: Math.PI / 6 * 10,
@@ -148,7 +148,7 @@ const arc = {
             defaultColor: '#fcb51a',
             hoverColor: '#fdd98b',
             isHovering: false,
-            name: 'G Major'
+            name: 'G'
         },
         D: {
             startAngle: Math.PI / 6 * 11,
@@ -156,7 +156,7 @@ const arc = {
             defaultColor: '#f79321',
             hoverColor: '#faba70',
             isHovering: false,
-            name: 'D Major'
+            name: 'D'
         },
     },
 }
