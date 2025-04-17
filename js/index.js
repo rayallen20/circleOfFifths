@@ -173,7 +173,7 @@ const fontConf = {
     font: '20px Arial',
     textAlign: 'center',
     textBaseline: 'middle',
-    fillStyle: 'black',
+    fillStyle: '#FFFFFF',
 }
 
 /**
@@ -376,18 +376,21 @@ function reDrawCircle(mousePosition) {
 function reDrawArc(mousePosition, tonality) {
     if (!isOnCircle(mousePosition)) {
         tonality.isHovering = false
+        fontConf.fillStyle = '#FFFFFF'
         drawArc(tonality)
         return
     }
 
     if (!isOnArc(mousePosition, tonality)) {
         tonality.isHovering = false
+        fontConf.fillStyle = '#FFFFFF'
         drawArc(tonality)
         return
     }
 
     if (!tonality.isHovering) {
         tonality.isHovering = true
+        fontConf.fillStyle = '#000000'
         drawArc(tonality)
     }
 }
