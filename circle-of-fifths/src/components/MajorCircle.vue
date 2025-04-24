@@ -13,8 +13,10 @@ defineOptions({
 })
 
 const canvasRef = inject("canvasRef")
+const canvasEle = canvasRef.value
 
 const canvasCtx = inject('canvasCtx')
+const ctx = canvasCtx.value
 
 const circleCenter = inject('circleCenter')
 
@@ -28,7 +30,7 @@ const circle = {
     radius: 300,
     lineWidth: 40,
 }
-canvasCtx.value.lineWidth = circle.lineWidth
+ctx.lineWidth = circle.lineWidth
 
 /**
  * 本常量用于表示圆弧相关属性(颜色/鼠标悬停时颜色/起始角度/结束角度)等
@@ -174,8 +176,8 @@ const draw = () => {
  * @return {void}
  * */
 const drawArc = (tonality) => {
-    canvasCtx.value.beginPath()
-    canvasCtx.value.arc(
+    ctx.beginPath()
+    ctx.arc(
         circleCenter.x,
         circleCenter.y,
         circle.radius,
@@ -184,14 +186,14 @@ const drawArc = (tonality) => {
     )
 
     if (tonality.isHovering) {
-        canvasCtx.value.strokeStyle = tonality.hoverColor
+        ctx.strokeStyle = tonality.hoverColor
     } else {
-        canvasCtx.value.strokeStyle = tonality.defaultColor
+        ctx.strokeStyle = tonality.defaultColor
     }
 
-    canvasCtx.value.stroke()
-    drawCenteredText(tonality, canvasCtx.value, circleCenter, circle.radius, fontConf)
-    canvasCtx.value.closePath()
+    ctx.stroke()
+    drawCenteredText(tonality, ctx, circleCenter, circle.radius, fontConf)
+    ctx.closePath()
 }
 
 /**
@@ -199,7 +201,7 @@ const drawArc = (tonality) => {
  * @param {MouseEvent} event
  * */
 const reDraw = (event) => {
-    const canvasDistanceRect = canvasRef.value.getBoundingClientRect()
+    const canvasDistanceRect = canvasEle.getBoundingClientRect()
 
     // 获取鼠标相对于canvas的坐标
     const relativeX = event.clientX - canvasDistanceRect.left
@@ -229,5 +231,5 @@ const reDraw = (event) => {
 }
 
 draw()
-canvasRef.value.addEventListener('mousemove', reDraw)
+canvasEle.addEventListener('mousemove', reDraw)
 </script>
