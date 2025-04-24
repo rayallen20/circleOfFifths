@@ -40,12 +40,12 @@ function isOnCircle(mousePosition, center, circle) {
  * - {number} x 鼠标相对于canvas的x坐标
  * - {number} y 鼠标相对于canvas的y坐标
  * @param {Object} tonality 圆弧表示的调式
- * @param {Object} circleCenter 圆心坐标
+ * @param {Object} center 圆心坐标
  * @return {boolean} 鼠标是否在圆弧上
  * */
-function isOnArc(mousePosition, tonality, circleCenter) {
-    const differenceX = mousePosition.x - circleCenter.x
-    const differenceY = mousePosition.y - circleCenter.y
+function isOnArc(mousePosition, tonality, center) {
+    const differenceX = mousePosition.x - center.x
+    const differenceY = mousePosition.y - center.y
 
     // 从几何学的角度上讲 这里算出来的角度 实际上是:
     // 点1: 鼠标悬停位置

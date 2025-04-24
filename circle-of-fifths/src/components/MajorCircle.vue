@@ -5,6 +5,7 @@
 <script setup>
 import {inject} from "vue"
 import {isOnCircle, isOnArc} from "@/utils/onArc"
+import {drawCenteredText} from "@/utils/drawFont"
 
 // eslint-disable-next-line
 defineOptions({
@@ -189,64 +190,8 @@ const drawArc = (tonality) => {
     }
 
     canvasCtx.value.stroke()
-    drawCenteredText(tonality)
+    drawCenteredText(tonality, canvasCtx.value, circleCenter, circle.radius, fontConf)
     canvasCtx.value.closePath()
-}
-
-/**
- * 本函数用于在圆弧中间位置绘制文字
- * @param {Object} tonality 圆弧表示的调式
- * */
-const drawCenteredText = (tonality) => {
-    const text = tonality.name
-    const chars = text.split('')
-    canvasCtx.value.save()
-
-    // 设置文字样式
-    canvasCtx.value.font = fontConf.font
-    canvasCtx.value.textAlign = fontConf.textAlign
-    canvasCtx.value.textBaseline = fontConf.textBaseline
-    if (tonality.isHovering) {
-        canvasCtx.value.fillStyle = fontConf.hoverFillStyle
-    } else {
-        canvasCtx.value.fillStyle = fontConf.defaultFillStyle
-    }
-
-    // 计算字符串的总宽度
-    const totalWidth = canvasCtx.value.measureText(text).width
-
-    // 将宽度转换为角度
-    const totalAngle = totalWidth / circle.radius
-
-    // 计算圆弧起始角度
-    const arcMiddleAngle = (tonality.startAngle + tonality.endAngle) / 2
-
-    // 计算每个字符的位置
-    let currentAngle = arcMiddleAngle - totalAngle / 2
-    for (let i = 0; i < chars.length; i++) {
-        const char = chars[i]
-        const charWidth = canvasCtx.value.measureText(char).width
-        const charAngle = charWidth / circle.radius
-
-        // 当前字符的中心角度
-        const charCenterAngle = currentAngle + charAngle / 2
-
-        // 字符坐标
-        const charX = circleCenter.x + circle.radius * Math.cos(charCenterAngle)
-        const charY = circleCenter.y + circle.radius * Math.sin(charCenterAngle)
-
-        // 绘制字符
-        canvasCtx.value.save()
-        canvasCtx.value.translate(charX, charY)
-        canvasCtx.value.rotate(charCenterAngle + Math.PI / 2) // 旋转画布 实际上是为了达到旋转字符的目的
-        canvasCtx.value.fillText(char, 0, 0)
-        canvasCtx.value.restore()
-
-        // 更新角度
-        currentAngle += charAngle
-    }
-
-    canvasCtx.value.restore()
 }
 
 /**
@@ -257,12 +202,12 @@ const reDraw = (event) => {
     const canvasDistanceRect = canvasRef.value.getBoundingClientRect()
 
     // 获取鼠标相对于canvas的坐标
-    const mouseRelativeX = event.clientX - canvasDistanceRect.left
-    const mouseRelativeY = event.clientY - canvasDistanceRect.top
+    const relativeX = event.clientX - canvasDistanceRect.left
+    const relativeY = event.clientY - canvasDistanceRect.top
 
     const mousePosition = {
-        x: mouseRelativeX,
-        y: mouseRelativeY,
+        x: relativeX,
+        y: relativeY,
     }
 
     for (const key in tonalities) {
@@ -274,6 +219,7 @@ const reDraw = (event) => {
         const prevHoverStatus = tonality.isHovering
         const currentHoverStatus = onCircle && onArc
 
+        // 仅当悬停状态发生变化时 重新渲染画布
         if (prevHoverStatus !== currentHoverStatus) {
             tonalities[key].isHovering = currentHoverStatus
             draw()
