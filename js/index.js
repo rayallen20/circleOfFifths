@@ -16,7 +16,7 @@ const canvasEle = document.querySelector('.circle')
 const canvasCtx = canvasEle.getContext('2d')
 
 /**
- * 本常量用于表示canvas的缓冲区
+ * 本常量用于表示canvas的缓冲区宽高
  * @type {Object}
  * @property {number} width 缓冲区宽度
  * @property {number} height 缓冲区高度
