@@ -4,9 +4,9 @@
 
 <script setup>
 import {inject} from "vue"
-import {isOnCircle, isOnArc} from "src/utils/onArc"
-import {drawCenteredText} from "src/utils/drawFont"
-import emitter from "src/utils/eventBus"
+import {isOnCircle, isOnArc} from "@/utils/onArc"
+import {drawCenteredText} from "@/utils/drawFont"
+import emitter from "@/utils/eventBus"
 
 // eslint-disable-next-line
 defineOptions({

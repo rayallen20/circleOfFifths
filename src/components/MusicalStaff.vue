@@ -5,7 +5,7 @@
 
 <script setup>
 import {inject} from "vue"
-import emitter from "src/utils/eventBus";
+import emitter from "@/utils/eventBus";
 
 // eslint-disable-next-line
 defineOptions({
@@ -18,7 +18,7 @@ const ctx = canvasCtx.value
 const circleCenter = inject('circleCenter')
 
 const staffImg = new Image()
-staffImg.src = require('src/assets/staff.png')
+staffImg.src = require('@/assets/staff.png')
 
 /**
  * 本常量用于表示绘制五线谱图像时的起始点(左上角)坐标
@@ -46,7 +46,7 @@ const staffPromise = new Promise(resolve => {
 })
 
 const flatImg = new Image()
-flatImg.src = require('src/assets/flat.png')
+flatImg.src = require('@/assets/flat.png')
 
 /**
  * 本常量用于表示绘制降号图像时的起始点(左上角)坐标
@@ -70,7 +70,7 @@ const locateFlat = () => {
 flatImg.addEventListener('load', locateFlat)
 
 const sharpImg = new Image()
-sharpImg.src = require('src/assets/sharp.png')
+sharpImg.src = require('@/assets/sharp.png')
 
 /**
  * 本常量用于表示绘制升号图像时的起始点(左上角)坐标

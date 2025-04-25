@@ -8,8 +8,8 @@
 
 <script setup>
 import {provide, reactive, readonly, ref, watchPostEffect} from "vue"
-import MajorCircle from "src/components/MajorCircle.vue"
-import MusicalStaff from "src/components/MusicalStaff.vue"
+import MajorCircle from "@/components/MajorCircle.vue"
+import MusicalStaff from "@/components/MusicalStaff.vue"
 
 // eslint-disable-next-line
 defineOptions({
