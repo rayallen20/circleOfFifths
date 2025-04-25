@@ -2,12 +2,14 @@
     <div id="app">
         <canvas class="circle" ref="canvasRef"></canvas>
         <MajorCircle v-if="canvasRef !== null"></MajorCircle>
+        <MusicalStaff v-if="canvasRef !== null"></MusicalStaff>
     </div>
 </template>
 
 <script setup>
 import {provide, reactive, readonly, ref, watchPostEffect} from "vue"
-import MajorCircle from "@/components/MajorCircle.vue"
+import MajorCircle from "src/components/MajorCircle.vue"
+import MusicalStaff from "src/components/MusicalStaff.vue"
 
 // eslint-disable-next-line
 defineOptions({

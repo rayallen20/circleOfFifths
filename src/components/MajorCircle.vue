@@ -4,8 +4,9 @@
 
 <script setup>
 import {inject} from "vue"
-import {isOnCircle, isOnArc} from "@/utils/onArc"
-import {drawCenteredText} from "@/utils/drawFont"
+import {isOnCircle, isOnArc} from "src/utils/onArc"
+import {drawCenteredText} from "src/utils/drawFont"
+import emitter from "src/utils/eventBus"
 
 // eslint-disable-next-line
 defineOptions({
@@ -164,6 +165,8 @@ const fontConf = {
 }
 
 const draw = () => {
+    ctx.clearRect(0, 0, canvasEle.width, canvasEle.height)
+
     for (const key in tonalities) {
         const tonality = tonalities[key]
         drawArc(tonality)
@@ -198,6 +201,7 @@ const drawArc = (tonality) => {
 
 /**
  * 本函数用于当鼠标悬停在圆弧时 重新渲染整个canvas
+ * TODO: 每次鼠标在canvas上移动时都重新渲染canvas,性能较差 后续需优化
  * @param {MouseEvent} event
  * */
 const reDraw = (event) => {
@@ -212,21 +216,26 @@ const reDraw = (event) => {
         y: relativeY,
     }
 
+    // 该循环只负责找出鼠标悬停的圆弧 逻辑上可以假定: 鼠标指针不可能同时悬停在多个圆弧上
+    let hoveringTonality = undefined
+
     for (const key in tonalities) {
         const tonality = tonalities[key]
 
         const onCircle = isOnCircle(mousePosition, circleCenter, circle)
         const onArc = isOnArc(mousePosition, tonality, circleCenter)
 
-        const prevHoverStatus = tonality.isHovering
-        const currentHoverStatus = onCircle && onArc
-
-        // 仅当悬停状态发生变化时 重新渲染画布
-        if (prevHoverStatus !== currentHoverStatus) {
-            tonalities[key].isHovering = currentHoverStatus
-            draw()
-            return
+        if (onCircle && onArc) {
+            tonality.isHovering = true
+            hoveringTonality = tonality
+        } else {
+            tonality.isHovering = false
         }
+    }
+
+    draw()
+    if (hoveringTonality !== undefined) {
+        emitter.emit('hoveringTonality', hoveringTonality)
     }
 }
 
