@@ -3,8 +3,7 @@
 </template>
 
 <script setup>
-import {inject} from "vue"
-import {isOnCircle, isOnArc} from "@/utils/onArc"
+import {inject, reactive, watch} from "vue"
 import {drawCenteredText} from "@/utils/drawFont"
 import emitter from "@/utils/eventBus"
 
@@ -46,6 +45,7 @@ ctx.lineWidth = circle.lineWidth
  * @property {string} A.hoverColor 鼠标悬停在圆弧上时 圆弧的颜色
  * @property {boolean} A.isHovering 鼠标是否悬停在圆弧上
  * @property {string} A.name 圆弧表示的调式名称
+ * @property {Path2D} A.path 圆弧的路径
  * */
 const tonalities = {
     A: {
@@ -55,7 +55,8 @@ const tonalities = {
         defaultColor: '#f36f22',
         hoverColor: '#f79e6b',
         isHovering: false,
-        name: 'A'
+        name: 'A',
+        path: new Path2D(),
     },
     E: {
         startAngle: Math.PI / 6,
@@ -63,7 +64,8 @@ const tonalities = {
         defaultColor: '#ec1b3c',
         hoverColor: '#f1526b',
         isHovering: false,
-        name: 'E'
+        name: 'E',
+        path: new Path2D(),
     },
     B: {
         startAngle: Math.PI / 6 * 2,
@@ -71,7 +73,8 @@ const tonalities = {
         defaultColor: '#a2258f',
         hoverColor: '#d136ba',
         isHovering: false,
-        name: 'C♭/B'
+        name: 'C♭/B',
+        path: new Path2D(),
     },
     FSharp: {
         startAngle: Math.PI / 6 * 3,
@@ -79,7 +82,8 @@ const tonalities = {
         defaultColor: '#5c2f91',
         hoverColor: '#7d43c2',
         isHovering: false,
-        name: 'G♭/F♯'
+        name: 'G♭/F♯',
+        path: new Path2D(),
     },
     DFlat: {
         startAngle: Math.PI / 6 * 4,
@@ -87,7 +91,8 @@ const tonalities = {
         defaultColor: '#185baa',
         hoverColor: '#408be4',
         isHovering: false,
-        name: 'D♭/C♯'
+        name: 'D♭/C♯',
+        path: new Path2D(),
     },
     AFlat: {
         startAngle: Math.PI / 6 * 5,
@@ -95,7 +100,8 @@ const tonalities = {
         defaultColor: '#0d71b9',
         hoverColor: '#3ba5f1',
         isHovering: false,
-        name: 'A♭'
+        name: 'A♭',
+        path: new Path2D(),
     },
     EFlat: {
         startAngle: Math.PI,
@@ -103,7 +109,8 @@ const tonalities = {
         defaultColor: '#19aaad',
         hoverColor: '#5fe5e8',
         isHovering: false,
-        name: 'E♭'
+        name: 'E♭',
+        path: new Path2D(),
     },
     BFlat: {
         startAngle: Math.PI / 6 * 7,
@@ -111,7 +118,8 @@ const tonalities = {
         defaultColor: '#25b24b',
         hoverColor: '#6be08b',
         isHovering: false,
-        name: 'B♭'
+        name: 'B♭',
+        path: new Path2D(),
     },
     F: {
         startAngle: Math.PI / 6 * 8,
@@ -119,7 +127,8 @@ const tonalities = {
         defaultColor: '#a6ce39',
         hoverColor: '#cce38e',
         isHovering: false,
-        name: 'F'
+        name: 'F',
+        path: new Path2D(),
     },
     C: {
         startAngle: Math.PI / 6 * 9,
@@ -127,7 +136,8 @@ const tonalities = {
         defaultColor: '#fbd307',
         hoverColor: '#fdec95',
         isHovering: false,
-        name: 'C'
+        name: 'C',
+        path: new Path2D(),
     },
     G: {
         startAngle: Math.PI / 6 * 10,
@@ -135,7 +145,8 @@ const tonalities = {
         defaultColor: '#fcb51a',
         hoverColor: '#fdd98b',
         isHovering: false,
-        name: 'G'
+        name: 'G',
+        path: new Path2D(),
     },
     D: {
         startAngle: Math.PI / 6 * 11,
@@ -143,9 +154,12 @@ const tonalities = {
         defaultColor: '#f79321',
         hoverColor: '#faba70',
         isHovering: false,
-        name: 'D'
+        name: 'D',
+        path: new Path2D(),
     },
 }
+
+const tonalitiesRef = reactive(tonalities)
 
 /**
  * 本常量用于定义绘制文字时的字体配置
@@ -167,8 +181,8 @@ const fontConf = {
 const draw = () => {
     ctx.clearRect(0, 0, canvasEle.width, canvasEle.height)
 
-    for (const key in tonalities) {
-        const tonality = tonalities[key]
+    for (const key in tonalitiesRef) {
+        const tonality = tonalitiesRef[key]
         drawArc(tonality)
     }
 }
@@ -179,8 +193,7 @@ const draw = () => {
  * @return {void}
  * */
 const drawArc = (tonality) => {
-    ctx.beginPath()
-    ctx.arc(
+    tonality.path.arc(
         circleCenter.x,
         circleCenter.y,
         circle.radius,
@@ -194,51 +207,77 @@ const drawArc = (tonality) => {
         ctx.strokeStyle = tonality.defaultColor
     }
 
-    ctx.stroke()
+    ctx.stroke(tonality.path)
     drawCenteredText(tonality, ctx, circleCenter, circle.radius, fontConf)
-    ctx.closePath()
 }
 
 /**
- * 本函数用于当鼠标悬停在圆弧时 重新渲染整个canvas
- * TODO: 每次鼠标在canvas上移动时都重新渲染canvas,性能较差 后续需优化
+ * 本函数用于当鼠标悬停状态发生变化时 重新渲染整个canvas
  * @param {MouseEvent} event
  * */
-const reDraw = (event) => {
-    const canvasDistanceRect = canvasEle.getBoundingClientRect()
+const toggleTonality = (event) => {
+    const canvasRect = canvasEle.getBoundingClientRect()
 
     // 获取鼠标相对于canvas的坐标
-    const relativeX = event.clientX - canvasDistanceRect.left
-    const relativeY = event.clientY - canvasDistanceRect.top
+    const relativeX = event.clientX - canvasRect.left
+    const relativeY = event.clientY - canvasRect.top
 
-    const mousePosition = {
-        x: relativeX,
-        y: relativeY,
-    }
-
-    // 该循环只负责找出鼠标悬停的圆弧 逻辑上可以假定: 鼠标指针不可能同时悬停在多个圆弧上
+    let needRewrite = false
     let hoveringTonality = undefined
 
-    for (const key in tonalities) {
-        const tonality = tonalities[key]
+    for (const key in tonalitiesRef) {
+        const tonality = tonalitiesRef[key]
 
-        const onCircle = isOnCircle(mousePosition, circleCenter, circle)
-        const onArc = isOnArc(mousePosition, tonality, circleCenter)
+        const prevIsHovering = tonality.isHovering
+        tonality.isHovering = ctx.isPointInStroke(tonality.path, relativeX, relativeY)
 
-        if (onCircle && onArc) {
-            tonality.isHovering = true
+        // 如果有悬停状态变化(悬停 -> 不悬停)/(不悬停 -> 悬停) 则需要重绘
+        if (prevIsHovering !== tonality.isHovering) {
+            needRewrite = true
+        }
+
+        // 如果鼠标悬停在圆弧上 则需要触发全局事件
+        if (tonality.isHovering) {
             hoveringTonality = tonality
-        } else {
-            tonality.isHovering = false
+        }
+
+        if (needRewrite) {
+            break
         }
     }
 
-    draw()
+    if (needRewrite) {
+        rewritePath()
+    }
+
     if (hoveringTonality !== undefined) {
         emitter.emit('hoveringTonality', hoveringTonality)
     }
 }
 
-draw()
-canvasEle.addEventListener('mousemove', reDraw)
+/**
+ * 本方法用于重置所有圆弧的路径
+ * Tips: clearRect()方法会清除canvas的所有内容,但不会销毁路径
+ * Tips: 这会导致重绘时路径重叠,因此需要清除重绘前的所有路径
+ * */
+const rewritePath = () => {
+    for (const key in tonalitiesRef) {
+        const tonality = tonalitiesRef[key]
+        tonality.path = new Path2D()
+    }
+}
+
+// 监听tonalitiesRef的变化
+watch(
+    tonalitiesRef,
+    () => {
+        draw()
+    },
+    {
+        deep: true,
+        immediate: true,
+    }
+)
+
+canvasEle.addEventListener('mousemove', toggleTonality)
 </script>

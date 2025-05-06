@@ -27,7 +27,7 @@ function drawCenteredText(tonality, ctx, center, radius, fontConf) {
     // 将宽度转换为角度
     const totalAngle = totalWidth / radius
 
-    // 计算圆弧起始角度
+    // 计算圆弧中心角度
     const arcMiddleAngle = (tonality.startAngle + tonality.endAngle) / 2
 
     // 计算每个字符的位置

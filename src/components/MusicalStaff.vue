@@ -5,7 +5,7 @@
 
 <script setup>
 import {inject} from "vue"
-import emitter from "@/utils/eventBus";
+import emitter from "@/utils/eventBus"
 
 // eslint-disable-next-line
 defineOptions({
